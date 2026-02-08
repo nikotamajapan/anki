@@ -97,8 +97,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
   letter-spacing: 0.02em;
+}
+
+.replay-btn {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--text-dim);
+  border-radius: 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.replay-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(122, 162, 247, 0.1);
 }
 
 .quiz-phase .choices {

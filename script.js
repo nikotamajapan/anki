@@ -35,6 +35,7 @@ const startBtn = document.getElementById('startBtn');
 const scoreEl = document.getElementById('score');
 const questionNumEl = document.getElementById('questionNum');
 const soundBtn = document.getElementById('soundBtn');
+const replayBtn = document.getElementById('replayBtn');
 
 let score = 0;
 
@@ -50,6 +51,15 @@ function speak(text, lang = 'ja-JP') {
 
 function speakFrench(text) {
   if (!soundEnabled || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'fr-FR';
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+function replayFrench(text) {
+  if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'fr-FR';
@@ -204,6 +214,10 @@ function restartGame() {
 soundBtn.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   updateSoundBtn();
+});
+
+replayBtn.addEventListener('click', () => {
+  if (currentItem) replayFrench(currentItem.meaning);
 });
 
 startBtn.addEventListener('click', startGame);

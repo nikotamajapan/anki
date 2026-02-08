@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フランス数字クイズ 11-99</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="game-container">
+    <header class="header">
+      <h1>🇫🇷 フランス数字クイズ 11-99</h1>
+      <div class="score-board">
+        <span class="score">スコア: <strong id="score">0</strong></span>
+        <span class="level">問題: <strong id="questionNum">0</strong></span>
+        <button type="button" class="sound-btn" id="soundBtn" title="音声のオン/オフ">🔊</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- 問題エリア: 数字を表示 -->
+      <section class="quiz-phase" id="quizPhase">
+        <p class="quiz-label">このすうじのフランスごはどれ？</p>
+        <div class="quiz-word" id="quizWord"></div>
+        <div class="choices" id="choices">
+          <button type="button" class="choice-btn" data-value=""></button>
+          <button type="button" class="choice-btn" data-value=""></button>
+          <button type="button" class="choice-btn" data-value=""></button>
+          <button type="button" class="choice-btn" data-value=""></button>
+        </div>
+      </section>
+
+      <!-- 結果表示 -->
+      <div class="result-overlay hidden" id="resultOverlay">
+        <div class="result-box">
+          <p class="result-message" id="resultMessage"></p>
+          <button type="button" class="next-btn" id="nextBtn">次へ</button>
+        </div>
+      </div>
+
+      <!-- ゲームオーバー -->
+      <div class="gameover-overlay hidden" id="gameoverOverlay">
+        <div class="gameover-box">
+          <h2>終了</h2>
+          <p>正解数: <strong id="correctCount">0</strong> / <strong id="totalCount">0</strong></p>
+          <button type="button" class="restart-btn" id="restartBtn">もう一度プレイ</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <button type="button" class="start-btn" id="startBtn">スタート</button>
+      <!-- 携帯で遊ぶ: httpで開いたときだけ表示 -->
+      <div class="mobile-link hidden" id="mobileLink">
+        <p class="mobile-label">📱 携帯で遊ぶ</p>
+        <p class="mobile-url" id="mobileUrl"></p>
+        <img class="mobile-qr" id="mobileQr" alt="QRコード" />
+        <p class="mobile-hint">同じWi-Fiの携帯でこのURLを開くか、QRコードをスキャン</p>
+      </div>
+      <button type="button" class="mobile-toggle hidden" id="mobileToggle" title="携帯用URLを表示">📱 URL</button>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    (function() {
+      var url = window.location.href;
+      var isHttp = url.indexOf('http') === 0;
+      var link = document.getElementById('mobileLink');
+      var urlEl = document.getElementById('mobileUrl');
+      var qrEl = document.getElementById('mobileQr');
+      var toggle = document.getElementById('mobileToggle');
+      function setUrl(u) {
+        urlEl.textContent = u;
+        qrEl.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(u);
+      }
+      if (isHttp && link && urlEl && qrEl) {
+        setUrl(url);
+        toggle.classList.remove('hidden');
+        toggle.addEventListener('click', function() {
+          link.classList.toggle('hidden');
+        });
+        if (url.indexOf('localhost') !== -1 || url.indexOf('127.0.0.1') !== -1) {
+          var rtc = new (window.RTCPeerConnection || window.webkitRTCPeerConnection)({ iceServers: [] });
+          rtc.createDataChannel('');
+          rtc.createOffer().then(function(offer) { return rtc.setLocalDescription(offer); });
+          rtc.onicecandidate = function(ev) {
+            if (!ev || !ev.candidate || !ev.candidate.candidate) return;
+            var m = ev.candidate.candidate.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/);
+            if (m && (m[1].startsWith('192.168.') || m[1].startsWith('10.') || m[1].startsWith('172.'))) {
+              rtc.close();
+              var port = window.location.port || '3000';
+              var lanUrl = 'http://' + m[1] + ':' + port + window.location.pathname;
+              setUrl(lanUrl);
+            }
+          };
+        }
+      } else if (toggle) {
+        toggle.classList.add('hidden');
+      }
+    })();
+  </script>
+</body>
+</html>
